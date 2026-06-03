@@ -28,7 +28,7 @@ const FOLDER_TO_CATEGORY = {
 
 exports.processSupplierFile = functions
   .region('asia-southeast1')
-  .runWith({ timeoutSeconds: 300, memory: '512MB' })
+  .runWith({ timeoutSeconds: 300, memory: '1GB' })
   .https.onRequest(async (req, res) => {
 
     if (req.method !== 'POST') {

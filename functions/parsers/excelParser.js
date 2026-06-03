@@ -15,8 +15,9 @@ const COLUMN_PATTERNS = {
   catalog:      [/collection\s*name/i, /catalogue\s*name/i, /catalog\s*name/i,
                  /product\s*name/i, /book\s*name/i, /^range$/i,
                  /^collection$/i, /^catalogue$/i, /^catalog$/i, /^collections$/i, /^book\s*names?/i],
-  sno:          [/^s\.?\s*no\.?$/i, /^sr\.?\s*no\.?$/i, /^serial\s*no/i,
+  sno:          [/^s\.?\s*no\.?$/i, /^sr\.?\s*no\.?$/i, /^serial/i,
                  /^no\.?$/i, /^sl\.?\s*no/i, /design\s*code/i,
+                 /^short\s*sku/i, /^sku\s*code/i, /^sku$/i,
                  /^code$/i, /^article$/i, /^ref/i, /^item\s*no/i, /^file$/i],
   design:       [/^design$/i, /design\s*name/i, /^pattern$/i, /^style$/i,
                  /^item\s*name$/i, /^quality$/i, /^name$/i,
@@ -28,8 +29,9 @@ const COLUMN_PATTERNS = {
                  /selling\s*price/i, /^price$/i, /unit\s*price/i,
                  /dealer\s*price/i, /net\s*rate/i, /our\s*price/i,
                  /trade\s*price/i, /^cost$/i,
-                 /^d\.?p\.?$/i, /^dp\s*\(/i, /cut.*mtr/i, /inr.*cut/i],
-  roll_rate:    [/roll\s*rate/i, /roll\s*price/i, /bolt\s*rate/i, /roll.*mtr/i, /inr.*roll/i],
+                 /^d\.?p\.?$/i, /^dp\s*\(/i, /^dpl$/i, /^cut$/i,
+                 /cut.*mtr/i, /inr.*cut/i],
+  roll_rate:    [/roll\s*rate/i, /roll\s*price/i, /bolt\s*rate/i, /^roll$/i, /roll.*mtr/i, /inr.*roll/i],
   rrp:          [/^r\s*r\s*p$/i, /^r\.r\.p$/i, /^rrp\s*\(?/i, /^rrp$/i,
                  /retail.*price/i, /recommended.*retail/i,
                  /mrp.*excl/i, /price.*excl.*gst/i, /without.*gst/i],
@@ -232,6 +234,9 @@ function parseExcel(fileBuffer, filename, category, brandOverride) {
     const rawRows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: null });
     if (!rawRows || rawRows.length === 0) continue;
 
+    // Detect category from sheet name (e.g. "Wallpaper" sheet in a Fabric file)
+    const sheetCategory = detectSheetCategory(sheetName, category);
+
     // ── Route 1: Mattress matrix ──
     if (isMattressMatrix(rawRows)) {
       const matRecords = parseMattressMatrix(
@@ -261,9 +266,6 @@ function parseExcel(fileBuffer, filename, category, brandOverride) {
       console.log(`[excelParser] Sheet "${sheetName}" — no price column found, skipping`);
       continue;
     }
-
-    // Override category based on sheet name (e.g. a "Wallpaper" sheet in a Fabric file)
-    const sheetCategory = detectSheetCategory(sheetName, category);
 
     const isGeneric      = GENERIC_SHEET_NAMES.includes(sheetName.toLowerCase().trim());
     const catalogFallback = posMap.catalog !== undefined ? null
