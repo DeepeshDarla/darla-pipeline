@@ -1,0 +1,14 @@
+{
+  "name": "darla-supplier-pipeline",
+  "description": "Darla supplier price list pipeline",
+  "engines": { "node": "20" },
+  "main": "index.js",
+  "dependencies": {
+    "firebase-admin": "^11.0.0",
+    "firebase-functions": "^4.0.0",
+    "@anthropic-ai/sdk": "^0.24.0",
+    "xlsx": "^0.18.5",
+    "pdf-parse": "^1.1.1",
+    "mammoth": "^1.7.0"
+  }
+}
