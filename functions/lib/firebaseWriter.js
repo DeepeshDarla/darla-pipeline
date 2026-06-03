@@ -115,6 +115,8 @@ async function rebuildMeta(catRef, cat) {
         price_unit:     data.price_unit     || 'per_metre',
         width_cm:       data.width_cm       || null,
         mrp:            data.rrp_incl_gst   || data.rrp || null,
+        cut_rate:       data.cut_rate        || null,
+        roll_rate:      data.roll_rate       || null,
         // First mechanism price for blinds preview
         preview_price: data.mechanisms
           ? Object.values(data.mechanisms)[0] || null
